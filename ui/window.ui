@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface>
+    <template class="FtpAppWindow" parent="GtkApplicationWindow">
+        <property name="title" translatable="yes">Walrus FTP</property>
+        <property name="default-width">600</property>
+        <property name="default-height">400</property>
+        <child>
+            <object class="GtkBox" id="content_box">
+                <property name="orientation">vertical</property>
+                <child>
+                <object class="GtkLabel">
+                        <property name="label">Server Name</property>
+                </object>
+                </child>
+            </object>
+        </child>
+    </template>
+</interface>
