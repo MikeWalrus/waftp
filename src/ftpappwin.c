@@ -5,6 +5,8 @@
 
 struct _FtpAppWindow {
 	GtkApplicationWindow parent;
+
+	GtkStack *stack;
 };
 
 G_DEFINE_TYPE(FtpAppWindow, ftp_app_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -16,8 +18,10 @@ static void ftp_app_window_init(FtpAppWindow *win)
 
 static void ftp_app_window_class_init(FtpAppWindowClass *class)
 {
-	gtk_widget_class_set_template_from_resource(
-		GTK_WIDGET_CLASS(class), "/walrus/ftp/ui/window.ui");
+	gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
+	                                            "/walrus/ftp/ui/window.ui");
+	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class),
+	                                     FtpAppWindow, stack);
 }
 
 FtpAppWindow *ftp_app_window_new(FtpApp *app)

@@ -4,15 +4,22 @@
         <property name="title" translatable="yes">Walrus FTP</property>
         <property name="default-width">600</property>
         <property name="default-height">400</property>
-        <child>
-            <object class="GtkBox" id="content_box">
-                <property name="orientation">vertical</property>
-                <child>
-                <object class="GtkLabel">
-                        <property name="label">Server Name</property>
-                </object>
+        <child type="titlebar">
+            <object class="GtkHeaderBar" id="header">
+                <child type="start">
+                    <object class="GtkButton" id="add-tab">
+                        <property name="icon-name">list-add</property>
+                    </object>
+                </child>
+                <child type="title">
+                    <object class="GtkStackSwitcher" id="tabs">
+                        <property name="stack">stack</property>
+                    </object>
                 </child>
             </object>
+        </child>
+        <child>
+            <object class="GtkStack" id="stack"></object>
         </child>
     </template>
 </interface>
