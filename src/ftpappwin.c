@@ -2,6 +2,7 @@
 
 #include "ftpapp.h"
 #include "ftpappwin.h"
+#include "mainbox.h"
 
 struct _FtpAppWindow {
 	GtkApplicationWindow parent;
@@ -10,6 +11,13 @@ struct _FtpAppWindow {
 };
 
 G_DEFINE_TYPE(FtpAppWindow, ftp_app_window, GTK_TYPE_APPLICATION_WINDOW);
+
+void add_new_tab(GtkButton *button, FtpAppWindow *win)
+{
+	MainBox *box = main_box_new(win);
+	gtk_stack_add_titled(GTK_STACK(win->stack), GTK_WIDGET(box), NULL,
+	                     "New Tab");
+}
 
 static void ftp_app_window_init(FtpAppWindow *win)
 {
@@ -22,6 +30,8 @@ static void ftp_app_window_class_init(FtpAppWindowClass *class)
 	                                            "/walrus/ftp/ui/window.ui");
 	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class),
 	                                     FtpAppWindow, stack);
+	gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class),
+	                                        add_new_tab);
 }
 
 FtpAppWindow *ftp_app_window_new(FtpApp *app)

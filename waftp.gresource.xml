@@ -2,5 +2,7 @@
 <gresources>
   <gresource prefix="/walrus/ftp">
     <file>ui/window.ui</file>
+    <file>ui/mainbox.ui</file>
+    <file>ui/login.ui</file>
   </gresource>
 </gresources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <interface>
     <template class="FtpAppWindow" parent="GtkApplicationWindow">
-        <property name="title" translatable="yes">Walrus FTP</property>
+        <property name="title">Walrus FTP</property>
         <property name="default-width">600</property>
         <property name="default-height">400</property>
         <child type="titlebar">
@@ -9,11 +9,18 @@
                 <child type="start">
                     <object class="GtkButton" id="add-tab">
                         <property name="icon-name">list-add</property>
+                        <signal name="clicked" handler="add_new_tab" />
                     </object>
                 </child>
                 <child type="title">
-                    <object class="GtkStackSwitcher" id="tabs">
-                        <property name="stack">stack</property>
+                    <object class="GtkScrolledWindow">
+                        <property name="max-content-width">100</property>
+                        <property name="hexpand">true</property>
+                        <child>
+                            <object class="GtkStackSwitcher" id="tabs">
+                                <property name="stack">stack</property>
+                            </object>
+                        </child>
                     </object>
                 </child>
             </object>

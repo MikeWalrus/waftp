@@ -1,6 +1,6 @@
-project('waftp', 'c')
-
-gtkdep = dependency('gtk4')
+project('waftp', 'c',
+        default_options : ['c_std=gnu17']
+)
 
 gnome=import('gnome')
 resources = gnome.compile_resources('resources','waftp.gresource.xml')
