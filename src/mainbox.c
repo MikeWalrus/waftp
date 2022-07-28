@@ -8,9 +8,11 @@
 
 struct _MainBox {
 	GtkBox parent;
+	GtkStackPage *page;
 	FtpAppWindow *win;
+	LoginDialog *login_dialog;
 
-	struct UserPI user_pi;
+	struct UserPI *user_pi;
 	struct LoginInfo login_info;
 };
 
@@ -31,8 +33,20 @@ MainBox *main_box_new(FtpAppWindow *win)
 {
 	MainBox *self = g_object_new(MAIN_BOX_TYPE, NULL);
 	self->win = win;
-	LoginDialog *dialog =
-		login_dialog_new(win, &self->user_pi, &self->login_info);
-	gtk_window_present(GTK_WINDOW(dialog));
+	self->user_pi = g_new(struct UserPI, 1);
+	self->login_dialog =
+		login_dialog_new(win, self, self->user_pi, &self->login_info);
+	gtk_window_present(GTK_WINDOW(self->login_dialog));
+
 	return self;
+}
+
+void main_box_set_page(MainBox *box, GtkStackPage *page)
+{
+	box->page = page;
+}
+
+void main_box_ftp_init(MainBox *box)
+{
+	gtk_stack_page_set_title(box->page, box->user_pi->ctrl.name);
 }

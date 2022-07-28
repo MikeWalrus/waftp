@@ -12,7 +12,7 @@
 
 G_DECLARE_FINAL_TYPE(LoginDialog, login_dialog, LOGIN, DIALOG, GtkDialog)
 
-LoginDialog *login_dialog_new(FtpAppWindow *win, struct UserPI *user_pi,
-                              struct LoginInfo *login);
+LoginDialog *login_dialog_new(FtpAppWindow *win, MainBox *box,
+                              struct UserPI *user_pi, struct LoginInfo *login);
 
 #endif

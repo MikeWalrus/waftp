@@ -10,4 +10,8 @@ G_DECLARE_FINAL_TYPE(MainBox, main_box, MAIN, BOX, GtkBox)
 
 MainBox *main_box_new(FtpAppWindow *win);
 
+void main_box_ftp_init(MainBox *box);
+
+void main_box_set_page(MainBox *box, GtkStackPage *page);
+
 #endif

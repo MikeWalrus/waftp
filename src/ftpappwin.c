@@ -15,8 +15,14 @@ G_DEFINE_TYPE(FtpAppWindow, ftp_app_window, GTK_TYPE_APPLICATION_WINDOW);
 void add_new_tab(GtkButton *button, FtpAppWindow *win)
 {
 	MainBox *box = main_box_new(win);
-	gtk_stack_add_titled(GTK_STACK(win->stack), GTK_WIDGET(box), NULL,
-	                     "New Tab");
+	GtkStackPage *page = gtk_stack_add_titled(
+		GTK_STACK(win->stack), GTK_WIDGET(box), NULL, "New Tab");
+	main_box_set_page(box, page);
+}
+
+void remove_tab(FtpAppWindow *win, MainBox *tab)
+{
+	gtk_stack_remove(win->stack, GTK_WIDGET(tab));
 }
 
 static void ftp_app_window_init(FtpAppWindow *win)

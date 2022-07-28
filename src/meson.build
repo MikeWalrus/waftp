@@ -1,12 +1,14 @@
 gtkdep = dependency('gtk4')
 libwaftpdep = dependency('libwaftp-1')
 
-sources =['main.c',
-          'ftpapp.c',
-          'ftpappwin.c',
-          'mainbox.c',
-          'logindialog.c'
-          ]
+sources = [
+'err.c',
+'ftpapp.c',
+'ftpappwin.c',
+'logindialog.c',
+'main.c',
+'mainbox.c',
+]
 executable('waftp',
            sources,
            resources,
