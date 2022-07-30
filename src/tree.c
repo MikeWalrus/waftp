@@ -124,3 +124,41 @@ void update_children(char *list, enum ListFormat format, GtkTreeStore *tree,
 		                   MODIFY_COLUMN, fact.modify, -1);
 	}
 }
+
+char *iter_to_path(GtkTreeIter *iter, GtkTreeStore *tree)
+{
+	if (!iter)
+		return strdup("");
+	GtkTreeIter *i = gtk_tree_iter_copy(iter);
+	GQueue *queue = g_queue_new();
+	size_t len = 0;
+	for (;;) {
+		char *name;
+		gtk_tree_model_get(GTK_TREE_MODEL(tree), i, NAME_COLUMN, &name,
+		                   -1);
+		len += strlen(name) + 1;
+		g_queue_push_head(queue, name);
+		GtkTreeIter parent;
+		if (!gtk_tree_model_iter_parent(GTK_TREE_MODEL(tree), &parent,
+		                                i))
+			break;
+		*i = parent;
+	}
+	char *path = malloc(len + 1);
+	char *dest = path;
+	for (;;) {
+		char *name = g_queue_pop_head(queue);
+		if (!name)
+			break;
+		char *src = name;
+		while (*src) {
+			*(dest++) = *(src++);
+		}
+		*(dest++) = '/';
+		g_free(name);
+	}
+	*dest = '\0';
+	g_queue_free(queue);
+	gtk_tree_iter_free(i);
+	return path;
+}

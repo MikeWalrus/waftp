@@ -22,4 +22,6 @@ void cell_data_func_modify(GtkTreeViewColumn *tree_column,
 void update_children(char *list, enum ListFormat format, GtkTreeStore *tree,
                      GtkTreeIter *parent, GtkWindow *win);
 
+char *iter_to_path(GtkTreeIter *iter, GtkTreeStore *tree);
+
 #endif

@@ -146,16 +146,9 @@ static bool get_dir_listing(struct Args_get_dir_listing *args)
 	return false;
 }
 
-static char *iter_to_path(GtkTreeIter *iter)
-{
-	if (!iter)
-		return strdup("");
-	return NULL;
-}
-
 static void list_directory_async(MainBox *box, GtkTreeIter *parent)
 {
-	char *path = iter_to_path(parent);
+	char *path = iter_to_path(parent, box->tree);
 	if (!path) {
 		report_ftp_error(GTK_WINDOW(box->win), __func__,
 		                 "Can't get directory path.");
@@ -167,6 +160,19 @@ static void list_directory_async(MainBox *box, GtkTreeIter *parent)
 	args->box = box;
 	args->parent = parent;
 	g_idle_add(G_SOURCE_FUNC(get_dir_listing), args);
+}
+
+void tree_view_on_row_activated(GtkTreeView *self, GtkTreePath *path,
+                                GtkTreeViewColumn *column, gpointer user_data)
+{
+	MainBox *box = MAIN_BOX(user_data);
+	GtkTreeIter *iter = g_new(GtkTreeIter, 1);
+	if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(box->tree), iter, path)) {
+		report_ftp_error(GTK_WINDOW(box->win), __func__,
+		                 "Can't get iterator.");
+		return;
+	}
+	list_directory_async(box, iter);
 }
 
 static void main_box_init(MainBox *b)
@@ -216,6 +222,8 @@ static void main_box_class_init(MainBoxClass *class)
 	                                     size_column);
 	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), MainBox,
 	                                     modify_column);
+	gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class),
+	                                        tree_view_on_row_activated);
 }
 
 MainBox *main_box_new(FtpAppWindow *win)

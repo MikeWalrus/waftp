@@ -6,6 +6,7 @@
                 <child>
                     <object class="GtkTreeView" id="tree_view">
                         <property name="hexpand">1</property>
+                        <signal name="row-activated" handler="tree_view_on_row_activated" />
                         <child>
                             <object class="GtkTreeViewColumn" id="icon_column">
                                 <property name="title">Type</property>
