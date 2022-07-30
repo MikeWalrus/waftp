@@ -17,11 +17,26 @@ struct _MainBox {
 	GAsyncQueue *path_queue;
 	GAsyncQueue *list_queue;
 
+	GtkTreeStore *tree;
+	GtkTreeView *tree_view;
+	GtkTreeViewColumn *icon_column;
+	GtkTreeViewColumn *size_column;
+	GtkTreeViewColumn *modify_column;
+
 	struct UserPI *user_pi;
 	struct LoginInfo login_info;
 };
 
 G_DEFINE_TYPE(MainBox, main_box, GTK_TYPE_BOX);
+
+enum {
+	NAME_COLUMN,
+	IS_DIR_COLUMN,
+	SIZE_COLUMN,
+	PERM_COLUMN,
+	MODIFY_COLUMN,
+	N_COLUMNS
+};
 
 struct ListingData {
 	struct UserPI *user_pi;
@@ -140,7 +155,6 @@ static void list_directory_async(MainBox *box, char *path)
 		g_new(struct Args_get_dir_listing, 1);
 	args->box = box;
 	g_idle_add(G_SOURCE_FUNC(get_dir_listing), args);
-	gchararray c;
 }
 
 static void main_box_init(MainBox *b)
@@ -149,6 +163,11 @@ static void main_box_init(MainBox *b)
 	b->listing_task = g_task_new(b, NULL, NULL, NULL);
 	b->list_queue = g_async_queue_new();
 	b->path_queue = g_async_queue_new();
+	b->tree =
+		gtk_tree_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN,
+	                           G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_UINT64);
+	gtk_tree_view_set_model(b->tree_view, GTK_TREE_MODEL(b->tree));
+	g_object_unref(b->tree);
 }
 
 static void main_box_dispose(GObject *object)
@@ -166,6 +185,14 @@ static void main_box_class_init(MainBoxClass *class)
 	G_OBJECT_CLASS(class)->dispose = main_box_dispose;
 	gtk_widget_class_set_template_from_resource(
 		GTK_WIDGET_CLASS(class), "/walrus/ftp/ui/mainbox.ui");
+	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), MainBox,
+	                                     tree_view);
+	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), MainBox,
+	                                     icon_column);
+	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), MainBox,
+	                                     size_column);
+	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), MainBox,
+	                                     modify_column);
 }
 
 MainBox *main_box_new(FtpAppWindow *win)

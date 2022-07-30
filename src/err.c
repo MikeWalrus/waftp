@@ -40,5 +40,4 @@ void report_ftp_error(GtkWindow *win, struct ErrMsg *err)
 	g_signal_connect(msg, "response", G_CALLBACK(gtk_window_destroy), NULL);
 	gtk_window_set_title(GTK_WINDOW(msg), err->where);
 	gtk_window_present(GTK_WINDOW(msg));
-	g_print("aaa\n");
 }
