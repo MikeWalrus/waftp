@@ -39,9 +39,6 @@
                 <child>
                     <object class="GtkTreeViewColumn" id="modify_column">
                         <property name="title">Modify</property>
-                        <child>
-                            <object class="GtkCellRendererText" />
-                        </child>
                     </object>
                 </child>
             </object>

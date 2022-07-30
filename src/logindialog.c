@@ -124,7 +124,8 @@ void user_pi_init_ready(GObject *source_object, GAsyncResult *res,
 		}
 		if (g_error_matches(e, FTP_ERROR, FTP_ERROR_FAIL)) {
 			struct ErrMsg *err = ftp_error_get_err(e);
-			report_ftp_error(GTK_WINDOW(dialog), err);
+			report_ftp_error(GTK_WINDOW(dialog), err->where,
+			                 err->msg);
 			conn_data_free_strings(data);
 			gtk_widget_set_visible(GTK_WIDGET(dialog->spinner),
 			                       false);

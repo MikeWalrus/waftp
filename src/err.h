@@ -16,6 +16,7 @@ static inline GError *ftp_error_fail_new()
 {
 	return g_error_new_literal(FTP_ERROR, FTP_ERROR_FAIL, "");
 }
-void report_ftp_error(GtkWindow *win, struct ErrMsg *err);
+
+void report_ftp_error(GtkWindow *win, const char *where, const char *err_msg);
 
 #endif

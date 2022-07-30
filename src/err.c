@@ -30,14 +30,14 @@ struct ErrMsg *ftp_error_get_err(GError *error)
 	return &priv->err;
 }
 
-void report_ftp_error(GtkWindow *win, struct ErrMsg *err)
+void report_ftp_error(GtkWindow *win, const char *where, const char *err_msg)
 {
 	GtkWidget *msg = gtk_message_dialog_new(
 		win,
 		GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL |
 			GTK_DIALOG_USE_HEADER_BAR,
-		GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", err->msg);
+		GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", err_msg);
 	g_signal_connect(msg, "response", G_CALLBACK(gtk_window_destroy), NULL);
-	gtk_window_set_title(GTK_WINDOW(msg), err->where);
+	gtk_window_set_title(GTK_WINDOW(msg), where);
 	gtk_window_present(GTK_WINDOW(msg));
 }

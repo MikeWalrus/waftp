@@ -104,6 +104,7 @@ static void listing_thread(GTask *task, gpointer source_object,
 			out_msg = ok_msg(list, format);
 		}
 		g_async_queue_push(out, out_msg);
+		free(in_msg->path);
 	}
 	g_free(err);
 }
@@ -121,6 +122,7 @@ static void start_listing_thread(MainBox *box)
 
 struct Args_get_dir_listing {
 	MainBox *box;
+	GtkTreeIter *parent;
 };
 
 static bool get_dir_listing(struct Args_get_dir_listing *args)
@@ -129,23 +131,41 @@ static bool get_dir_listing(struct Args_get_dir_listing *args)
 	if (!msg)
 		return true;
 	if (msg->err) {
-		report_ftp_error(GTK_WINDOW(args->box->win), msg->err_msg);
+		report_ftp_error(GTK_WINDOW(args->box->win),
+		                 msg->err_msg->where, msg->err_msg->msg);
+		msg->list = NULL;
 	} else {
 		g_print("%s", msg->list);
 		g_print("format: %d\n", msg->format);
 	}
 
+	update_children(msg->list, msg->format, args->box->tree, args->parent,
+	                GTK_WINDOW(args->box->win));
 	g_free(args);
-	// TODO: updata UI
+	free(msg->list);
 	return false;
 }
 
-static void list_directory_async(MainBox *box, char *path)
+static char *iter_to_path(GtkTreeIter *iter)
 {
+	if (!iter)
+		return strdup("");
+	return NULL;
+}
+
+static void list_directory_async(MainBox *box, GtkTreeIter *parent)
+{
+	char *path = iter_to_path(parent);
+	if (!path) {
+		report_ftp_error(GTK_WINDOW(box->win), __func__,
+		                 "Can't get directory path.");
+		return;
+	}
 	g_async_queue_push(box->path_queue, path_msg(path));
 	struct Args_get_dir_listing *args =
 		g_new(struct Args_get_dir_listing, 1);
 	args->box = box;
+	args->parent = parent;
 	g_idle_add(G_SOURCE_FUNC(get_dir_listing), args);
 }
 
@@ -158,18 +178,19 @@ static void main_box_init(MainBox *b)
 	b->tree = tree_store_new();
 	gtk_tree_view_set_model(b->tree_view, GTK_TREE_MODEL(b->tree));
 	g_object_unref(b->tree);
-	gtk_tree_view_column_set_cell_data_func(b->icon_column,
-	                                        gtk_cell_renderer_pixbuf_new(),
-	                                        cell_data_func_icon, NULL,
-	                                        NULL);
-	gtk_tree_view_column_set_cell_data_func(b->size_column,
-	                                        gtk_cell_renderer_text_new(),
-	                                        cell_data_func_size, NULL,
-	                                        NULL);
-	gtk_tree_view_column_set_cell_data_func(b->modify_column,
-	                                        gtk_cell_renderer_text_new(),
-	                                        cell_data_func_modify, NULL,
-	                                        NULL);
+	GtkCellRenderer *renderer;
+	renderer = gtk_cell_renderer_pixbuf_new();
+	gtk_tree_view_column_pack_start(b->icon_column, renderer, true);
+	gtk_tree_view_column_set_cell_data_func(
+		b->icon_column, renderer, cell_data_func_icon, NULL, NULL);
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_column_pack_start(b->size_column, renderer, true);
+	gtk_tree_view_column_set_cell_data_func(
+		b->size_column, renderer, cell_data_func_size, NULL, NULL);
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_column_pack_start(b->modify_column, renderer, true);
+	gtk_tree_view_column_set_cell_data_func(
+		b->modify_column, renderer, cell_data_func_modify, NULL, NULL);
 }
 
 static void main_box_dispose(GObject *object)
@@ -218,5 +239,5 @@ void main_box_ftp_init(MainBox *box)
 {
 	gtk_stack_page_set_title(box->page, box->user_pi->ctrl.name);
 	start_listing_thread(box);
-	list_directory_async(box, "");
+	list_directory_async(box, NULL);
 }
