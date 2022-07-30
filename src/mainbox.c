@@ -17,6 +17,7 @@ struct _MainBox {
 	GTask *listing_task;
 	GAsyncQueue *path_queue;
 	GAsyncQueue *list_queue;
+	GQueue *iter_queue;
 
 	GtkTreeStore *tree;
 	GtkTreeView *tree_view;
@@ -122,7 +123,6 @@ static void start_listing_thread(MainBox *box)
 
 struct Args_get_dir_listing {
 	MainBox *box;
-	GtkTreeIter *parent;
 };
 
 static bool get_dir_listing(struct Args_get_dir_listing *args)
@@ -139,7 +139,8 @@ static bool get_dir_listing(struct Args_get_dir_listing *args)
 		g_print("format: %d\n", msg->format);
 	}
 
-	update_children(msg->list, msg->format, args->box->tree, args->parent,
+	update_children(msg->list, msg->format, args->box->tree,
+	                g_queue_pop_tail(args->box->iter_queue),
 	                GTK_WINDOW(args->box->win));
 	g_free(args);
 	free(msg->list);
@@ -158,7 +159,7 @@ static void list_directory_async(MainBox *box, GtkTreeIter *parent)
 	struct Args_get_dir_listing *args =
 		g_new(struct Args_get_dir_listing, 1);
 	args->box = box;
-	args->parent = parent;
+	g_queue_push_head(box->iter_queue, parent);
 	g_idle_add(G_SOURCE_FUNC(get_dir_listing), args);
 }
 
@@ -181,6 +182,7 @@ static void main_box_init(MainBox *b)
 	b->listing_task = g_task_new(b, NULL, NULL, NULL);
 	b->list_queue = g_async_queue_new();
 	b->path_queue = g_async_queue_new();
+	b->iter_queue = g_queue_new();
 	b->tree = tree_store_new();
 	gtk_tree_view_set_model(b->tree_view, GTK_TREE_MODEL(b->tree));
 	g_object_unref(b->tree);
@@ -206,6 +208,7 @@ static void main_box_dispose(GObject *object)
 	g_object_unref(self->list_queue);
 	g_object_unref(self->path_queue);
 	g_object_unref(self->listing_task);
+	g_queue_free(self->iter_queue);
 	G_OBJECT_CLASS(main_box_parent_class)->dispose(object);
 }
 
