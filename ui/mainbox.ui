@@ -7,9 +7,6 @@
                 <child>
                     <object class="GtkTreeViewColumn" id="icon_column">
                         <property name="title">Type</property>
-                        <child>
-                            <object class="GtkCellRendererPixbuf" />
-                        </child>
                     </object>
                 </child>
                 <child>
@@ -26,9 +23,6 @@
                 <child>
                     <object class="GtkTreeViewColumn" id="size_column">
                         <property name="title">Size</property>
-                        <child>
-                            <object class="GtkCellRendererText" />
-                        </child>
                     </object>
                 </child>
                 <child>

@@ -4,6 +4,7 @@
 #include "ftpappwin.h"
 #include "logindialog.h"
 #include "mainbox.h"
+#include "tree.h"
 
 #include <libwaftp.h>
 
@@ -28,15 +29,6 @@ struct _MainBox {
 };
 
 G_DEFINE_TYPE(MainBox, main_box, GTK_TYPE_BOX);
-
-enum {
-	NAME_COLUMN,
-	IS_DIR_COLUMN,
-	SIZE_COLUMN,
-	PERM_COLUMN,
-	MODIFY_COLUMN,
-	N_COLUMNS
-};
 
 struct ListingData {
 	struct UserPI *user_pi;
@@ -163,11 +155,21 @@ static void main_box_init(MainBox *b)
 	b->listing_task = g_task_new(b, NULL, NULL, NULL);
 	b->list_queue = g_async_queue_new();
 	b->path_queue = g_async_queue_new();
-	b->tree =
-		gtk_tree_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN,
-	                           G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_UINT64);
+	b->tree = tree_store_new();
 	gtk_tree_view_set_model(b->tree_view, GTK_TREE_MODEL(b->tree));
 	g_object_unref(b->tree);
+	gtk_tree_view_column_set_cell_data_func(b->icon_column,
+	                                        gtk_cell_renderer_pixbuf_new(),
+	                                        cell_data_func_icon, NULL,
+	                                        NULL);
+	gtk_tree_view_column_set_cell_data_func(b->size_column,
+	                                        gtk_cell_renderer_text_new(),
+	                                        cell_data_func_size, NULL,
+	                                        NULL);
+	gtk_tree_view_column_set_cell_data_func(b->modify_column,
+	                                        gtk_cell_renderer_text_new(),
+	                                        cell_data_func_modify, NULL,
+	                                        NULL);
 }
 
 static void main_box_dispose(GObject *object)
