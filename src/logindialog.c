@@ -24,7 +24,7 @@ struct _LoginDialog {
 	GtkEntry *port;
 	GtkSpinner *spinner;
 
-	GCancellable *cancelable;
+	GCancellable *cancellable;
 
 	FtpAppWindow *win;
 	MainBox *box;
@@ -106,18 +106,6 @@ void conn_data_copy_strings_from_dialog(struct ConnData *data,
 		                     .account_info = strdup(account) };
 }
 
-void report_ftp_error(LoginDialog *dialog, struct ErrMsg *err)
-{
-	GtkWidget *msg = gtk_message_dialog_new(
-		GTK_WINDOW(dialog),
-		GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL |
-			GTK_DIALOG_USE_HEADER_BAR,
-		GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", err->msg);
-	g_signal_connect(msg, "response", G_CALLBACK(gtk_window_destroy), NULL);
-	gtk_window_set_title(GTK_WINDOW(msg), err->where);
-	gtk_window_present(GTK_WINDOW(msg));
-}
-
 void user_pi_init_ready(GObject *source_object, GAsyncResult *res,
                         gpointer user_data)
 {
@@ -136,11 +124,11 @@ void user_pi_init_ready(GObject *source_object, GAsyncResult *res,
 		}
 		if (g_error_matches(e, FTP_ERROR, FTP_ERROR_FAIL)) {
 			struct ErrMsg *err = ftp_error_get_err(e);
-			report_ftp_error(dialog, err);
+			report_ftp_error(GTK_WINDOW(dialog), err);
 			conn_data_free_strings(data);
 			gtk_widget_set_visible(GTK_WIDGET(dialog->spinner),
 			                       false);
-		return;
+			return;
 		}
 		g_assert(false && "Unexpected GError");
 	}
@@ -167,15 +155,15 @@ static void login_do(LoginDialog *dialog)
 
 	conn_data_copy_strings_from_dialog(&dialog->conn_data, dialog);
 
-	g_cancellable_reset(dialog->cancelable);
-	user_pi_init_async(dialog, dialog->cancelable, user_pi_init_ready,
+	g_cancellable_reset(dialog->cancellable);
+	user_pi_init_async(dialog, dialog->cancellable, user_pi_init_ready,
 	                   &dialog->conn_data);
 }
 
 static void login_cancel(LoginDialog *dialog)
 {
 	if (is_busy(dialog)) {
-		g_cancellable_cancel(dialog->cancelable);
+		g_cancellable_cancel(dialog->cancellable);
 		return;
 	}
 	remove_tab(dialog->win, dialog->box);
@@ -208,7 +196,7 @@ static void login_dialog_init(LoginDialog *dialog)
 static void login_dialog_dispose(GObject *object)
 {
 	LoginDialog *d = LOGIN_DIALOG(object);
-	g_object_unref(d->cancelable);
+	g_object_unref(d->cancellable);
 
 	G_OBJECT_CLASS(login_dialog_parent_class)->dispose(object);
 }
@@ -247,6 +235,6 @@ LoginDialog *login_dialog_new(FtpAppWindow *win, MainBox *box,
 	self->box = box;
 	self->conn_data.user_pi = user_pi;
 	self->conn_data.login = login;
-	self->cancelable = g_cancellable_new();
+	self->cancellable = g_cancellable_new();
 	return self;
 }
