@@ -96,15 +96,31 @@ void cell_data_func_modify(GtkTreeViewColumn *tree_column,
 	g_value_unset(&text);
 }
 
+static void remove_children(GtkTreeStore *tree, GtkTreeIter *parent)
+{
+	GtkTreeIter child;
+	if (gtk_tree_model_iter_children(GTK_TREE_MODEL(tree), &child,
+	                                 parent)) {
+		while (gtk_tree_store_remove(tree, &child))
+			;
+	}
+}
+
 void update_children(char *list, enum ListFormat format, GtkTreeStore *tree,
                      GtkTreeIter *parent, GtkWindow *win)
 {
+	if (parent && !gtk_tree_store_iter_is_valid(tree, parent))
+		return;
+
+	remove_children(tree, parent);
+
 	ParseLineListFunc parse_line;
 	if (format == FORMAT_LIST) {
 		parse_line = parse_line_list_gnu;
 	} else {
 		return;
 	}
+
 	const char *ptr = list;
 	while (*ptr) {
 		bool ignore;
