@@ -18,6 +18,7 @@ void add_new_tab(GtkButton *button, FtpAppWindow *win)
 	GtkStackPage *page = gtk_stack_add_titled(
 		GTK_STACK(win->stack), GTK_WIDGET(box), NULL, "New Tab");
 	main_box_set_page(box, page);
+	gtk_stack_set_visible_child(win->stack, GTK_WIDGET(box));
 }
 
 void remove_tab(FtpAppWindow *win, MainBox *tab)
