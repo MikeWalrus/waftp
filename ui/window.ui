@@ -22,7 +22,7 @@
                     <object class="GtkPopover" id="popover">
                         <property name="has-arrow">0</property>
                         <property name="position">bottom</property>
-                        <property name="autohide">1</property>
+                        <property name="autohide">0</property>
                         <child>
                             <object class="GtkScrolledWindow">
                                 <property name="propagate-natural-width">1</property>

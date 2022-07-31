@@ -26,9 +26,12 @@ void add_new_tab(GtkButton *button, FtpAppWindow *win)
 
 void show_popover(GtkButton *button, FtpAppWindow *win)
 {
-	gtk_popover_popup(win->popover);
-	TaskBox *task = task_box_new(win);
-	gtk_list_box_append(win->tasks, GTK_WIDGET(task));
+	bool visible = gtk_widget_get_visible(GTK_WIDGET(win->popover));
+	if (!visible) {
+		gtk_popover_popup(win->popover);
+		return;
+	}
+	gtk_popover_popdown(win->popover);
 }
 
 void remove_tab(FtpAppWindow *win, MainBox *tab)
