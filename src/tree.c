@@ -106,6 +106,12 @@ static void remove_children(GtkTreeStore *tree, GtkTreeIter *parent)
 	}
 }
 
+bool iter_is_dir(GtkTreeStore *tree, GtkTreeIter *iter)
+{
+	if (!gtk_tree_store_iter_is_valid(tree, iter))
+		return false;
+}
+
 void update_children(char *list, enum ListFormat format, GtkTreeStore *tree,
                      GtkTreeIter *parent, GtkWindow *win)
 {
@@ -138,6 +144,7 @@ void update_children(char *list, enum ListFormat format, GtkTreeStore *tree,
 		                   IS_DIR_COLUMN, fact.is_dir, SIZE_COLUMN,
 		                   fact.size, PERM_COLUMN, fact.perm,
 		                   MODIFY_COLUMN, fact.modify, -1);
+		free(fact.name);
 	}
 }
 
@@ -173,7 +180,7 @@ char *iter_to_path(GtkTreeIter *iter, GtkTreeStore *tree)
 		*(dest++) = '/';
 		g_free(name);
 	}
-	*dest = '\0';
+	*(dest - 1) = '\0';
 	g_queue_free(queue);
 	gtk_tree_iter_free(i);
 	return path;

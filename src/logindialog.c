@@ -173,7 +173,6 @@ static void login_cancel(LoginDialog *dialog)
 
 void login_response(LoginDialog *dialog, gint response_id, LoginDialog *_)
 {
-	g_print("response_id: %d\n", response_id);
 	switch (response_id) {
 	case GTK_RESPONSE_OK:
 		login_do(dialog);

@@ -106,6 +106,7 @@ static void listing_thread(GTask *task, gpointer source_object,
 		}
 		g_async_queue_push(out, out_msg);
 		free(in_msg->path);
+		free(in_msg);
 	}
 	g_free(err);
 }
@@ -144,6 +145,7 @@ static bool get_dir_listing(struct Args_get_dir_listing *args)
 	                GTK_WINDOW(args->box->win));
 	g_free(args);
 	free(msg->list);
+	free(msg);
 	return false;
 }
 
@@ -171,6 +173,10 @@ void tree_view_on_row_activated(GtkTreeView *self, GtkTreePath *path,
 	if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(box->tree), iter, path)) {
 		report_ftp_error(GTK_WINDOW(box->win), __func__,
 		                 "Can't get iterator.");
+		return;
+	}
+	if (!gtk_tree_store_iter_is_valid(box->tree, iter)) {
+		gtk_tree_iter_free(iter);
 		return;
 	}
 	list_directory_async(box, iter);
