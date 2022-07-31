@@ -4,5 +4,6 @@
     <file>ui/window.ui</file>
     <file>ui/mainbox.ui</file>
     <file>ui/login.ui</file>
+    <file>ui/taskbox.ui</file>
   </gresource>
 </gresources>

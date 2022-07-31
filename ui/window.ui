@@ -12,6 +12,39 @@
                         <signal name="clicked" handler="add_new_tab" />
                     </object>
                 </child>
+                <child type="start">
+                    <object class="GtkButton">
+                        <property name="icon-name">open-menu-symbolic</property>
+                        <signal name="clicked" handler="show_popover" />
+                    </object>
+                </child>
+                <child type="start">
+                    <object class="GtkPopover" id="popover">
+                        <property name="has-arrow">0</property>
+                        <property name="position">bottom</property>
+                        <property name="autohide">1</property>
+                        <child>
+                            <object class="GtkScrolledWindow">
+                                <property name="propagate-natural-width">1</property>
+                                <property name="min-content-height">200</property>
+                                <child>
+                                    <object class="GtkBox">
+                                        <property name="orientation">vertical</property>
+                                        <child>
+                                            <object class="GtkLabel">
+                                                <property name="label">Transfers</property>
+                                                <property name="xalign">0</property>
+                                            </object>
+                                        </child>
+                                        <child>
+                                            <object class="GtkListBox" id="tasks"></object>
+                                        </child>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+                    </object>
+                </child>
                 <child type="title">
                     <object class="GtkScrolledWindow">
                         <property name="max-content-width">100</property>

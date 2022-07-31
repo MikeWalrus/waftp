@@ -8,7 +8,8 @@ sources = [
     'logindialog.c',
     'main.c',
     'mainbox.c',
-    'tree.c'
+    'taskbox.c',
+    'tree.c',
 ]
 executable('waftp',
         sources,

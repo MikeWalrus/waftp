@@ -3,11 +3,14 @@
 #include "ftpapp.h"
 #include "ftpappwin.h"
 #include "mainbox.h"
+#include "taskbox.h"
 
 struct _FtpAppWindow {
 	GtkApplicationWindow parent;
 
 	GtkStack *stack;
+	GtkPopover *popover;
+	GtkListBox *tasks;
 };
 
 G_DEFINE_TYPE(FtpAppWindow, ftp_app_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -19,6 +22,13 @@ void add_new_tab(GtkButton *button, FtpAppWindow *win)
 		GTK_STACK(win->stack), GTK_WIDGET(box), NULL, "New Tab");
 	main_box_set_page(box, page);
 	gtk_stack_set_visible_child(win->stack, GTK_WIDGET(box));
+}
+
+void show_popover(GtkButton *button, FtpAppWindow *win)
+{
+	gtk_popover_popup(win->popover);
+	TaskBox *task = task_box_new(win);
+	gtk_list_box_append(win->tasks, GTK_WIDGET(task));
 }
 
 void remove_tab(FtpAppWindow *win, MainBox *tab)
@@ -37,8 +47,14 @@ static void ftp_app_window_class_init(FtpAppWindowClass *class)
 	                                            "/walrus/ftp/ui/window.ui");
 	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class),
 	                                     FtpAppWindow, stack);
+	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class),
+	                                     FtpAppWindow, popover);
+	gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class),
+	                                     FtpAppWindow, tasks);
 	gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class),
 	                                        add_new_tab);
+	gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class),
+	                                        show_popover);
 }
 
 FtpAppWindow *ftp_app_window_new(FtpApp *app)
