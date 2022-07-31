@@ -108,8 +108,10 @@ static void remove_children(GtkTreeStore *tree, GtkTreeIter *parent)
 
 bool iter_is_dir(GtkTreeStore *tree, GtkTreeIter *iter)
 {
-	if (!gtk_tree_store_iter_is_valid(tree, iter))
-		return false;
+	bool is_dir;
+	gtk_tree_model_get(GTK_TREE_MODEL(tree), iter, IS_DIR_COLUMN, &is_dir,
+	                   -1);
+	return is_dir;
 }
 
 void update_children(char *list, enum ListFormat format, GtkTreeStore *tree,

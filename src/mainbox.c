@@ -175,11 +175,8 @@ void tree_view_on_row_activated(GtkTreeView *self, GtkTreePath *path,
 		                 "Can't get iterator.");
 		return;
 	}
-	if (!gtk_tree_store_iter_is_valid(box->tree, iter)) {
-		gtk_tree_iter_free(iter);
-		return;
-	}
-	list_directory_async(box, iter);
+	if (iter_is_dir(box->tree, iter))
+		list_directory_async(box, iter);
 }
 
 static void main_box_init(MainBox *b)

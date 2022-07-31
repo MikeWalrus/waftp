@@ -24,4 +24,6 @@ void update_children(char *list, enum ListFormat format, GtkTreeStore *tree,
 
 char *iter_to_path(GtkTreeIter *iter, GtkTreeStore *tree);
 
+bool iter_is_dir(GtkTreeStore *tree, GtkTreeIter *iter);
+
 #endif
