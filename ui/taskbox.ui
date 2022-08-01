@@ -29,7 +29,7 @@
             </object>
         </child>
         <child>
-            <object class="GtkProgressBar" id="prgress_bar"></object>
+            <object class="GtkProgressBar" id="progress"></object>
         </child>
     </template>
 </interface>

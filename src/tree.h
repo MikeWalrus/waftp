@@ -22,7 +22,11 @@ void cell_data_func_modify(GtkTreeViewColumn *tree_column,
 void update_children(char *list, enum ListFormat format, GtkTreeStore *tree,
                      GtkTreeIter *parent, GtkWindow *win);
 
-char *iter_to_path(GtkTreeIter *iter, GtkTreeStore *tree);
+char *iter_to_path(GtkTreeIter *iter, GtkTreeModel *tree);
+
+char *iter_get_name(GtkTreeIter *iter, GtkTreeModel *tree);
+
+ssize_t iter_get_size(GtkTreeIter *iter, GtkTreeModel *tree);
 
 bool iter_is_dir(GtkTreeStore *tree, GtkTreeIter *iter);
 

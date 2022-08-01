@@ -106,6 +106,20 @@ static void remove_children(GtkTreeStore *tree, GtkTreeIter *parent)
 	}
 }
 
+char *iter_get_name(GtkTreeIter *iter, GtkTreeModel *tree)
+{
+	char *ret;
+	gtk_tree_model_get(tree, iter, NAME_COLUMN, &ret, -1);
+	return ret;
+}
+
+ssize_t iter_get_size(GtkTreeIter *iter, GtkTreeModel *tree)
+{
+	ssize_t ret;
+	gtk_tree_model_get(tree, iter, SIZE_COLUMN, &ret, -1);
+	return ret;
+}
+
 bool iter_is_dir(GtkTreeStore *tree, GtkTreeIter *iter)
 {
 	bool is_dir;
@@ -150,7 +164,7 @@ void update_children(char *list, enum ListFormat format, GtkTreeStore *tree,
 	}
 }
 
-char *iter_to_path(GtkTreeIter *iter, GtkTreeStore *tree)
+char *iter_to_path(GtkTreeIter *iter, GtkTreeModel *tree)
 {
 	if (!iter)
 		return strdup("");

@@ -16,4 +16,11 @@ void ftp_app_window_open(FtpAppWindow *win, GFile *file);
 typedef struct _MainBox MainBox;
 void remove_tab(FtpAppWindow *win, MainBox *tab);
 
+typedef struct _TaskBox TaskBox;
+void add_task_box(FtpAppWindow *win, TaskBox *box);
+
+GAsyncQueue *get_queue(FtpAppWindow *win);
+
+size_t *get_active_tasks(FtpAppWindow *win);
+
 #endif

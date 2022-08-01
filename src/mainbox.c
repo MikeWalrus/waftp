@@ -4,6 +4,7 @@
 #include "ftpappwin.h"
 #include "logindialog.h"
 #include "mainbox.h"
+#include "taskbox.h"
 #include "tree.h"
 
 #include <libwaftp.h>
@@ -151,7 +152,7 @@ static bool get_dir_listing(struct Args_get_dir_listing *args)
 
 static void list_directory_async(MainBox *box, GtkTreeIter *parent)
 {
-	char *path = iter_to_path(parent, box->tree);
+	char *path = iter_to_path(parent, GTK_TREE_MODEL(box->tree));
 	if (!path) {
 		report_ftp_error(GTK_WINDOW(box->win), __func__,
 		                 "Can't get directory path.");
@@ -165,6 +166,15 @@ static void list_directory_async(MainBox *box, GtkTreeIter *parent)
 	g_idle_add(G_SOURCE_FUNC(get_dir_listing), args);
 }
 
+static void download(MainBox *box, GtkTreeIter *iter, GtkTreeModel *tree)
+{
+	char *name = iter_get_name(iter, tree);
+	ssize_t size = iter_get_size(iter, tree);
+	char *path = iter_to_path(iter, tree);
+	task_box_new(box->win, box->user_pi, &box->login_info, path, name,
+	             size);
+}
+
 void tree_view_on_row_activated(GtkTreeView *self, GtkTreePath *path,
                                 GtkTreeViewColumn *column, gpointer user_data)
 {
@@ -175,8 +185,11 @@ void tree_view_on_row_activated(GtkTreeView *self, GtkTreePath *path,
 		                 "Can't get iterator.");
 		return;
 	}
-	if (iter_is_dir(box->tree, iter))
+	if (iter_is_dir(box->tree, iter)) {
 		list_directory_async(box, iter);
+		return;
+	}
+	download(box, iter, GTK_TREE_MODEL(box->tree));
 }
 
 static void main_box_init(MainBox *b)
@@ -208,8 +221,8 @@ static void main_box_dispose(GObject *object)
 {
 	MainBox *self = MAIN_BOX(object);
 	g_async_queue_push_front(self->path_queue, shutdown_msg());
-	g_object_unref(self->list_queue);
-	g_object_unref(self->path_queue);
+	g_async_queue_unref(self->list_queue);
+	g_async_queue_unref(self->path_queue);
 	g_object_unref(self->listing_task);
 	g_queue_free(self->iter_queue);
 	G_OBJECT_CLASS(main_box_parent_class)->dispose(object);
